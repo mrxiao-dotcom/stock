@@ -17,6 +17,7 @@ def create_app():
     os.makedirs(os.path.join(app.static_folder, 'css', 'vendor'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'css', 'webfonts'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'js', 'vendor'), exist_ok=True)
+    os.makedirs(os.path.join(app.static_folder, 'images'), exist_ok=True)
     os.makedirs(app.template_folder, exist_ok=True)
     os.makedirs('logs', exist_ok=True)
     

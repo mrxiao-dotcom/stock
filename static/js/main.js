@@ -61,12 +61,28 @@ function loadStockDetail(stockCode) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // 确保图表已初始化
-                if (!stockDailyChart) {
-                    initializeCharts();
-                }
+                // 更新K线图
                 updateStockDailyChart(data.stock_data);
+                
+                // 更新资金流向图
+                updateMoneyFlowChart({
+                    dates: data.stock_data.dates,
+                    super_large_inflow: data.stock_data.super_large_inflow || [],
+                    super_large_outflow: data.stock_data.super_large_outflow || [],
+                    large_inflow: data.stock_data.large_inflow || [],
+                    large_outflow: data.stock_data.large_outflow || []
+                });
+                
+                // 更新资金净流入图
+                updateNetInflowChart({
+                    dates: data.stock_data.dates,
+                    net_inflow: data.stock_data.net_inflow || []
+                });
+                
+                // 显示所属板块
                 showStockSectors(data.sectors);
+            } else {
+                console.error('获取个股详情失败:', data.message);
             }
         })
         .catch(error => {
