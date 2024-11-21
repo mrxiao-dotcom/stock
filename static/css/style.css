@@ -1,0 +1,296 @@
+/* 基础重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 主容器 */
+.main-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 5px;
+    background-color: #f8f9fa;
+}
+
+/* 标题栏 */
+.header {
+    padding: 5px 10px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 内容区域 */
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    min-height: 0;  /* 防止溢出 */
+}
+
+/* 左侧导航 */
+.vertical-tabs {
+    width: 30px;
+    background-color: #fff;
+    box-shadow: 1px 0 2px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 5px 0;
+}
+
+/* 竖排文字导航按钮样式 */
+.vertical-tabs .nav-link {
+    writing-mode: vertical-lr;        /* 竖排文字 */
+    text-orientation: upright;        /* 文字直立 */
+    letter-spacing: 2px;             /* 文字间距 */
+    font-size: 12px;                 /* 字体大小 */
+    padding: 15px 2px;               /* 内边距 */
+    height: auto;                    /* 自适应高度 */
+    min-height: 80px;                /* 最小高度 */
+    white-space: nowrap;             /* 不换行 */
+    border-left: 2px solid transparent;  /* 左边框用于激活状态 */
+    transition: all 0.3s ease;       /* 过渡效果 */
+    margin: 2px 0;                   /* 按钮间距 */
+    display: flex;                   /* 使用flex布局 */
+    align-items: center;             /* 居中对齐 */
+    justify-content: center;         /* 居中对齐 */
+}
+
+/* 导航按钮激活状态 */
+.vertical-tabs .nav-link.active {
+    color: #0d6efd;                  /* 激活时的文字颜色 */
+    border-left-color: #0d6efd;      /* 激活时的边框颜色 */
+    background-color: #e7f1ff;       /* 激活时的背景色 */
+}
+
+/* 导航按钮悬停状态 */
+.vertical-tabs .nav-link:hover {
+    background-color: #f8f9fa;       /* 悬停时的背景色 */
+}
+
+/* Tab内容区域 */
+.tab-content {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+}
+
+.tab-pane {
+    flex: 1;
+    display: flex;
+    min-width: 0;
+}
+
+/* 数据浏览区域 */
+.upper-section {
+    flex: 1;
+    display: flex;
+    gap: 5px;
+    min-width: 0;
+    height: calc(100vh - 50px);  /* 减去标题栏高度 */
+    overflow: hidden;  /* 防止整体滚动 */
+}
+
+/* 左侧列表区域 */
+.lists-container {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex-shrink: 0;
+    height: 100%;  /* 充满父容器高度 */
+}
+
+/* 板块列表和成分股列表容器 */
+.sector-container,
+.stock-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;  /* 防止溢出 */
+}
+
+/* 列表头部 */
+.section-header {
+    padding: 5px;
+    background-color: #fff;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    flex-shrink: 0;  /* 不参与压缩 */
+}
+
+/* 列表区域 */
+.sector-list,
+.stock-list {
+    flex: 1;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    background-color: #fff;
+    overflow-y: auto;  /* 只允许垂直滚动 */
+    min-height: 0;  /* 防止溢出 */
+}
+
+/* 右侧图表区域 */
+.charts-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    height: 100%;  /* 充满父容器高度 */
+    overflow: hidden;  /* 防止整体滚动 */
+}
+
+/* 图表容器 */
+.chart-container {
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 5px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* 时间轴图表容器 */
+.timeline-container {
+    flex: 4;  /* 40% */
+    min-height: 0;
+}
+
+/* 成交额图表容器 */
+.volume-container {
+    flex: 2;  /* 20% */
+    min-height: 0;
+}
+
+/* 个股图表区域 */
+.stock-charts {
+    flex: 3;  /* 30% */
+    display: flex;
+    gap: 5px;
+    min-height: 0;
+}
+
+.stock-charts .chart-container {
+    flex: 1;
+    min-width: 0;
+}
+
+/* 图表实例容器 */
+#timeline-chart,
+#volume-chart,
+#stock-daily-chart,
+#money-flow-chart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+}
+
+/* 列表项样式 */
+.list-group-item {
+    padding: 4px 6px;
+    font-size: 11px;
+    border: none;
+    border-bottom: 1px solid #eee;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* 列表项内容样式 */
+.stock-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+    min-width: 0;
+}
+
+.stock-info .sector-name,
+.stock-info .stock-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.badge {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 3px 6px;
+}
+
+/* 当列表为空时的样式 */
+.empty-list {
+    padding: 10px;
+    text-align: center;
+    color: #999;
+    font-size: 12px;
+}
+
+/* 搜索框容器样式 */
+.section-header {
+    padding: 5px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.search-input {
+    flex: 1;
+    height: 24px;
+    font-size: 11px;
+    padding: 2px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+/* 图表标题样式 */
+.echarts-title {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+}
+ 
