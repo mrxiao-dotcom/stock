@@ -21,7 +21,7 @@ function loadSectorList() {
 }
 
 // 加载板块股票
-function loadSectorStocks(sectorId) {
+function loadSectorStocks(sectorId, sectorName) {
     currentSectorId = sectorId;
     fetch(`/api/sector/${sectorId}/stocks`)
         .then(response => response.json())
@@ -29,7 +29,7 @@ function loadSectorStocks(sectorId) {
             if (data.success) {
                 console.log('获取到板块数据:', data);  // 添加日志
                 updateStockList(data);
-                updateCharts(data);
+                updateCharts(data, sectorName);
                 // 自动加载第一只股票的详情
                 if (data.daily_changes && data.dates && data.dates.length > 0) {
                     const latestDate = data.dates[data.dates.length - 1];
@@ -182,7 +182,9 @@ function updateSectorList(sectors) {
             sector.sector_type.replace('CONCEPT', '').replace('CUSTOM', '').trim() : '';
 
         return `
-            <div class="list-group-item" onclick="loadSectorStocks(${sector.sector_id})">
+            <div class="list-group-item sector-item" 
+                 data-sector-id="${sector.sector_id}"
+                 onclick="selectSector(${sector.sector_id}, this)">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="stock-info">
                         <span class="sector-name">${sector.sector_name || '未命名板块'}</span>
@@ -195,6 +197,20 @@ function updateSectorList(sectors) {
             </div>
         `;
     }).join('');
+}
+
+// 选择板块
+function selectSector(sectorId, element) {
+    // 移除其他板块的选中状态
+    document.querySelectorAll('.sector-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // 添加当前板块的选中状态
+    element.classList.add('active');
+    
+    // 加载板块数据
+    loadSectorStocks(sectorId);
 }
 
 // 搜索板块
@@ -249,7 +265,7 @@ function initializeCharts() {
 }
 
 // 更新图表
-function updateCharts(data) {
+function updateCharts(data, sectorName) {
     console.log('更新图表数据:', data);
 
     if (!data || !data.daily_changes || !data.dates) {
@@ -258,8 +274,8 @@ function updateCharts(data) {
     }
 
     try {
-        // 直接传递原始数据给时间轴图表
-        updateTimelineChart(data);
+        // 更新时间轴图表
+        updateTimelineChart(data, sectorName);
 
         // 准备成交额数据
         const dates = data.dates;

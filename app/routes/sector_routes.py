@@ -55,28 +55,27 @@ def register_sector_routes(app):
         """获取板块内股票列表及其涨跌幅数据"""
         try:
             logger.info(f"获取板块 {sector_id} 的股票列表")
+            
             with get_mysql_connection() as conn:
-                cursor = conn.cursor(dictionary=True)
-                
-                # 获取板块内的股票列表和基本信息，包括开盘价
-                cursor.execute('''
-                    SELECT DISTINCT
-                        s.证券代码 as code,
-                        s.证券简称 as name,
-                        sd.open,
-                        sd.close,
-                        sd.amount,
-                        sd.trade_date
-                    FROM sector_stocks ss
-                    JOIN stocks s ON ss.stock_code = s.证券代码
-                    LEFT JOIN stock_data sd ON s.证券代码 = sd.ts_code
-                    WHERE ss.sector_id = %s
-                    AND sd.trade_date >= '20240920'
-                    ORDER BY sd.trade_date
-                ''', (sector_id,))
-                
-                price_data = cursor.fetchall()
-                cursor.close()
+                # 获取板块内的股票列表和基本信息
+                with conn.cursor(dictionary=True) as cursor:
+                    cursor.execute('''
+                        SELECT DISTINCT
+                            s.证券代码 as code,
+                            s.证券简称 as name,
+                            sd.open,
+                            sd.close,
+                            sd.amount,
+                            sd.trade_date
+                        FROM sector_stocks ss
+                        JOIN stocks s ON ss.stock_code = s.证券代码
+                        LEFT JOIN stock_data sd ON s.证券代码 = sd.ts_code
+                        WHERE ss.sector_id = %s
+                        AND sd.trade_date >= '20240920'
+                        ORDER BY sd.trade_date
+                    ''', (sector_id,))
+                    
+                    price_data = cursor.fetchall()
                 
                 if not price_data:
                     return jsonify({

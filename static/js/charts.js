@@ -13,7 +13,9 @@ const CHART_COLORS = {
         START: '#83bff6',
         MIDDLE: '#188df0',
         END: '#188df0'
-    }
+    },
+    AXIS: '#666',
+    SPLIT_LINE: '#eee'
 };
 
 const CHART_TITLE_STYLE = {
@@ -22,21 +24,21 @@ const CHART_TITLE_STYLE = {
     textAlign: 'center'
 };
 
+const AXIS_LABEL_STYLE = {
+    fontSize: 10,
+    color: CHART_COLORS.AXIS
+};
+
 const CHART_GRID = {
-    top: 70,
+    top: 80,
     right: '3%',
-    bottom: 30,
+    bottom: 60,
     left: '3%',
     containLabel: true
 };
 
-const AXIS_LABEL_STYLE = {
-    fontSize: 10,
-    color: '#666'
-};
-
-// 图表基础配置
-const CHART_CONFIG = {
+// 基础图表配置
+const BASE_CHART_CONFIG = {
     grid: CHART_GRID,
     title: {
         ...CHART_TITLE_STYLE,
@@ -49,8 +51,62 @@ const CHART_CONFIG = {
             type: 'cross'
         }
     },
-    axisLabel: AXIS_LABEL_STYLE
+    xAxis: {
+        axisLabel: {
+            ...AXIS_LABEL_STYLE,
+            rotate: 30
+        }
+    },
+    yAxis: {
+        nameTextStyle: {
+            ...AXIS_LABEL_STYLE,
+            padding: [0, 30, 0, 0]
+        },
+        axisLabel: AXIS_LABEL_STYLE,
+        splitLine: {
+            show: true,
+            lineStyle: {
+                type: 'dashed',
+                color: CHART_COLORS.SPLIT_LINE
+            }
+        }
+    }
 };
+
+// 格式化数字
+function formatNumber(value, precision = 1) {
+    if (typeof value !== 'number') return '--';
+    return value.toFixed(precision);
+}
+
+// 格式化金额
+function formatAmount(value) {
+    if (typeof value !== 'number') return '--';
+    if (value >= 100000000) {
+        return (value / 100000000).toFixed(2) + '亿';
+    }
+    return (value / 10000).toFixed(2) + '万';
+}
+
+// 格式化日期
+function formatDate(date) {
+    if (!date) return '';
+    return date.substring(5);  // 只显示月-日
+}
+
+// 获取涨跌色
+function getChangeColor(value) {
+    return value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN;
+}
+
+// 创建渐变色
+function createGradient(chart, colors) {
+    return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        {offset: 0, color: colors[0]},
+        {offset: 0.5, color: colors[1]},
+        {offset: 1, color: colors[2]}
+    ]);
+}
 
 // 确保图表实例存在
 function ensureChartInitialized(chartInstance, elementId) {
@@ -149,32 +205,10 @@ function updateStockDailyChart(data) {
     changes.unshift(0);  // 第一天的涨跌幅为0
 
     const option = {
+        ...BASE_CHART_CONFIG,
         title: {
             text: `${data.name}K线`,
-            ...CHART_TITLE_STYLE,
-            left: 'center',
-            top: 5
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'cross'
-            },
-            formatter: function(params) {
-                const date = params[0].axisValue;
-                let html = `${date}<br/>`;
-                params.forEach(param => {
-                    if (param.seriesName === '涨跌幅') {
-                        const color = param.value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN;
-                        html += `<span style="color:${color}">
-                            ${param.seriesName}: ${param.value.toFixed(2)}%
-                        </span><br/>`;
-                    } else if (param.seriesName === '成交额') {
-                        html += `${param.seriesName}: ${(param.value/100000000).toFixed(2)}亿<br/>`;
-                    }
-                });
-                return html;
-            }
+            ...CHART_TITLE_STYLE
         },
         legend: {
             data: ['涨跌幅', '成交额'],
@@ -182,45 +216,34 @@ function updateStockDailyChart(data) {
             right: 10,
             textStyle: { fontSize: 12 }
         },
-        grid: CHART_GRID,
         xAxis: {
             type: 'category',
             data: data.dates,
             boundaryGap: false,
             axisLabel: {
                 ...AXIS_LABEL_STYLE,
-                rotate: 30,
-                formatter: value => value.substring(5)
+                formatter: formatDate
             }
         },
         yAxis: [{
             type: 'value',
             name: '涨跌幅(%)',
             position: 'left',
-            nameTextStyle: AXIS_LABEL_STYLE,
+            ...BASE_CHART_CONFIG.yAxis,
             axisLabel: {
                 ...AXIS_LABEL_STYLE,
-                formatter: '{value}%'
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    type: 'dashed',
-                    color: '#eee'
-                }
+                formatter: value => value + '%'
             }
         }, {
             type: 'value',
-            name: '成交额(亿元)',
+            name: '成交额',
             position: 'right',
             nameTextStyle: AXIS_LABEL_STYLE,
             axisLabel: {
                 ...AXIS_LABEL_STYLE,
-                formatter: value => (value/100000000).toFixed(1)
+                formatter: formatAmount
             },
-            splitLine: {
-                show: false
-            }
+            splitLine: { show: false }
         }],
         series: [{
             name: '涨跌幅',
@@ -286,13 +309,13 @@ function updateStockDailyChart(data) {
 }
 
 // 更新时间轴图表
-function updateTimelineChart(data) {
+function updateTimelineChart(data, sectorName) {
     if (!timelineChart) {
         console.warn('时间轴图表未初始化');
         return;
     }
 
-    console.log('更新时间轴图表数据:', data);
+    console.log('更新时间轴图表数据:', data, '板块名称:', sectorName);
 
     if (!data || !data.daily_changes || !data.dates) {
         console.error('无效的数据格式:', data);
@@ -315,8 +338,11 @@ function updateTimelineChart(data) {
     // 创建基准价格映射
     const basePrices = {};
     firstDayData.stocks.forEach(stock => {
-        if (stock.close) {
-            basePrices[stock.code] = parseFloat(stock.close);
+        if (stock.open && stock.close) {  // 确保有开盘价和收盘价
+            basePrices[stock.code] = {
+                open: parseFloat(stock.open),
+                close: parseFloat(stock.close)
+            };
         }
     });
 
@@ -324,13 +350,22 @@ function updateTimelineChart(data) {
     dates.forEach(date => {
         const dayData = data.daily_changes[date];
         if (dayData && dayData.stocks) {
-            // 计算每只股票相对于首日的涨跌幅
+            // 计算每只股票的涨跌幅
             const stockChanges = dayData.stocks
                 .filter(stock => basePrices[stock.code] && stock.close)  // 确保有基准价和当日收盘价
                 .map(stock => {
-                    const basePrice = basePrices[stock.code];
+                    const baseInfo = basePrices[stock.code];
                     const currentPrice = parseFloat(stock.close);
-                    const change = ((currentPrice - basePrice) / basePrice * 100);
+                    let change;
+                    
+                    if (date === firstDate) {
+                        // 第一天使用当天收盘价相对开盘价的涨跌幅
+                        change = ((baseInfo.close - baseInfo.open) / baseInfo.open * 100);
+                    } else {
+                        // 其他天使用收盘价相对首日开盘价的涨跌幅
+                        change = ((currentPrice - baseInfo.open) / baseInfo.open * 100);
+                    }
+                    
                     return {
                         name: stock.name,
                         code: stock.code,
@@ -354,14 +389,14 @@ function updateTimelineChart(data) {
                 axisType: 'category',
                 autoPlay: false,
                 playInterval: 3000,
-                data: dates.map(date => date.substring(5)),  // 只显示月-日
+                data: dates.map(date => date.substring(5)),
                 label: {
                     formatter: function(s) {
                         return s;
                     },
                     fontSize: 12
                 },
-                bottom: 5,  // 调整时间轴位置
+                bottom: 5,
                 height: 30,
                 emphasis: {
                     itemStyle: {
@@ -378,30 +413,31 @@ function updateTimelineChart(data) {
                 }
             },
             title: [{
-                text: '板块累计涨幅',
+                text: `${sectorName || ''} 板块累计涨幅`,
                 ...CHART_TITLE_STYLE,
-                left: 'center',
-                top: 10
+                left: '50%',
+                top: 10,
+                textAlign: 'center',
+                textStyle: {
+                    ...CHART_TITLE_STYLE,
+                    align: 'center'
+                }
             }, {
                 text: '(相对9月20日)',
-                top: 30,
-                left: 'center',
+                top: 35,
+                left: '50%',
+                textAlign: 'center',
                 textStyle: {
                     fontSize: 12,
                     color: '#666',
-                    fontWeight: 'normal'
+                    fontWeight: 'normal',
+                    align: 'center'
                 }
             }],
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {
-                    type: 'shadow'
-                }
-            },
             grid: {
-                top: 70,      // 增加顶部空间
+                top: 80,
                 right: '3%',
-                bottom: 60,   // 增加底部空间
+                bottom: 60,
                 left: '3%',
                 containLabel: true
             },
@@ -410,7 +446,9 @@ function updateTimelineChart(data) {
                 axisLabel: {
                     interval: 0,
                     rotate: 30,
-                    fontSize: 10
+                    fontSize: 10,
+                    width: 100,
+                    overflow: 'truncate'
                 }
             },
             yAxis: {
@@ -418,7 +456,7 @@ function updateTimelineChart(data) {
                 name: '累计涨幅',
                 nameTextStyle: { 
                     fontSize: 12,
-                    padding: [0, 30, 0, 0]
+                    padding: [0, 20, 0, 0]
                 },
                 axisLabel: {
                     fontSize: 12,
@@ -434,9 +472,16 @@ function updateTimelineChart(data) {
             }
         },
         options: timelineData.map(dayData => ({
-            title: {
-                subtext: `(${dayData.date})`
-            },
+            title: [{
+                subtext: dayData.date,
+                top: 55,
+                left: '50%',
+                subtextStyle: {
+                    fontSize: 12,
+                    color: '#666',
+                    align: 'center'
+                }
+            }],
             xAxis: {
                 data: dayData.stocks.map(stock => stock.name)
             },
@@ -471,20 +516,27 @@ function updateVolumeChart(data) {
         return;
     }
 
-    console.log('更新成交额图表数据:', data);
-
     const option = {
-        ...CHART_CONFIG,
         title: {
-            ...CHART_CONFIG.title,
-            text: '板块成交额'
+            text: '板块成交额',
+            ...CHART_TITLE_STYLE,
+            left: 'center',
+            top: 10
         },
         tooltip: {
             trigger: 'axis',
             formatter: function(params) {
+                const value = params[0].value;
                 return `${params[0].axisValue}<br/>
-                        成交额: ${(params[0].value/100000000).toFixed(2)}亿元`;
+                        成交额: ${formatAmount(value)}`;
             }
+        },
+        grid: {
+            top: 50,
+            right: '3%',
+            bottom: 30,
+            left: '3%',
+            containLabel: true
         },
         xAxis: {
             type: 'category',
@@ -492,25 +544,25 @@ function updateVolumeChart(data) {
             axisLabel: {
                 fontSize: 10,
                 rotate: 30,
-                formatter: value => value.substring(5)
+                formatter: formatDate
             }
         },
         yAxis: {
             type: 'value',
-            name: '成交额(亿元)',
+            name: '成交额',
             nameTextStyle: {
                 fontSize: 12,
                 padding: [0, 30, 0, 0]
             },
             axisLabel: {
                 fontSize: 10,
-                formatter: value => (value/100000000).toFixed(1)
+                formatter: value => formatAmount(value)
             },
             splitLine: {
                 show: true,
                 lineStyle: {
                     type: 'dashed',
-                    color: '#eee'
+                    color: CHART_COLORS.SPLIT_LINE
                 }
             }
         },
@@ -518,12 +570,33 @@ function updateVolumeChart(data) {
             type: 'bar',
             data: data.volumes,
             itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {offset: 0, color: CHART_COLORS.VOLUME.START},
-                    {offset: 0.5, color: CHART_COLORS.VOLUME.MIDDLE},
-                    {offset: 1, color: CHART_COLORS.VOLUME.END}
+                color: createGradient(volumeChart, [
+                    CHART_COLORS.VOLUME.START,
+                    CHART_COLORS.VOLUME.MIDDLE,
+                    CHART_COLORS.VOLUME.END
                 ])
+            },
+            emphasis: {
+                itemStyle: {
+                    color: createGradient(volumeChart, [
+                        CHART_COLORS.VOLUME.MIDDLE,
+                        CHART_COLORS.VOLUME.MIDDLE,
+                        CHART_COLORS.VOLUME.START
+                    ])
+                }
+            },
+            barWidth: '60%',
+            label: {
+                show: true,
+                position: 'top',
+                formatter: value => formatAmount(value),
+                fontSize: 10
             }
+        }],
+        dataZoom: [{
+            type: 'inside',
+            start: 0,
+            end: 100
         }]
     };
     
@@ -541,9 +614,9 @@ function updateMoneyFlowChart(data) {
     console.log('更新资金流向图表:', data);
 
     const option = {
-        ...CHART_CONFIG,
+        ...BASE_CHART_CONFIG,
         title: {
-            ...CHART_CONFIG.title,
+            ...BASE_CHART_CONFIG.title,
             text: '资金流向'
         },
         legend: {
@@ -570,7 +643,7 @@ function updateMoneyFlowChart(data) {
             axisLabel: {
                 ...AXIS_LABEL_STYLE,
                 rotate: 30,
-                formatter: value => value.substring(5)
+                formatter: formatDate
             }
         },
         yAxis: {
@@ -632,9 +705,9 @@ function updateNetInflowChart(data) {
     console.log('更新资金净流入图表:', data);
 
     const option = {
-        ...CHART_CONFIG,
+        ...BASE_CHART_CONFIG,
         title: {
-            ...CHART_CONFIG.title,
+            ...BASE_CHART_CONFIG.title,
             text: '资金净流入'
         },
         tooltip: {
@@ -652,7 +725,7 @@ function updateNetInflowChart(data) {
             axisLabel: {
                 ...AXIS_LABEL_STYLE,
                 rotate: 30,
-                formatter: value => value.substring(5)
+                formatter: formatDate
             }
         },
         yAxis: {
