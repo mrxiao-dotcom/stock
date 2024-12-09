@@ -1,88 +1,128 @@
-import sqlite3
+import os
+import sys
 import logging
+from pathlib import Path
+import mysql.connector
+from dotenv import load_dotenv
 
-# 设置日志
-logging.basicConfig(level=logging.INFO)
+# 添加项目根目录到系统路径
+project_root = Path(__file__).parent.parent
+sys.path.append(str(project_root))
+
+# 加载环境变量
+load_dotenv()
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
-def check_table_exists(cursor, table_name):
-    """检查表是否存在"""
-    cursor.execute('''
-        SELECT count(*) FROM sqlite_master 
-        WHERE type='table' AND name=?
-    ''', (table_name,))
-    return cursor.fetchone()[0] > 0
+# 数据库配置
+DB_CONFIG = {
+    'host': os.getenv('MYSQL_HOST', 'localhost'),
+    'user': os.getenv('MYSQL_USER', 'root'),
+    'password': os.getenv('MYSQL_PASSWORD', ''),
+    'database': os.getenv('MYSQL_DATABASE', 'stock_db')
+}
 
-def init_missing_tables():
-    """只初始化缺失的表"""
+# SQL语句
+CREATE_TABLES_SQL = """
+-- 创建股票基本信息表
+CREATE TABLE IF NOT EXISTS stocks (
+    证券代码 VARCHAR(20) PRIMARY KEY,
+    证券简称 VARCHAR(50),
+    上市日期 DATE,
+    所属行业 VARCHAR(50),
+    总股本 DECIMAL(20,2),
+    流通股本 DECIMAL(20,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 创建股票日线数据表
+CREATE TABLE IF NOT EXISTS stock_data (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ts_code VARCHAR(20),
+    trade_date VARCHAR(8),
+    open DECIMAL(10,2),
+    high DECIMAL(10,2),
+    low DECIMAL(10,2),
+    close DECIMAL(10,2),
+    vol DECIMAL(20,2),
+    amount DECIMAL(20,2),
+    change_pct DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_ts_code_date (ts_code, trade_date)
+);
+
+-- 创建指数日线数据表
+CREATE TABLE IF NOT EXISTS stock_index_daily (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ts_code VARCHAR(20),
+    name VARCHAR(50),
+    trade_date VARCHAR(8),
+    open DECIMAL(10,2),
+    high DECIMAL(10,2),
+    low DECIMAL(10,2),
+    close DECIMAL(10,2),
+    vol DECIMAL(20,2),
+    amount DECIMAL(20,2),
+    change_pct DECIMAL(10,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_ts_code_date (ts_code, trade_date)
+);
+
+-- 创建板块表
+CREATE TABLE IF NOT EXISTS sectors (
+    sector_id INT AUTO_INCREMENT PRIMARY KEY,
+    sector_name VARCHAR(50) NOT NULL,
+    sector_type VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_name_type (sector_name, sector_type)
+);
+
+-- 创建板块股票关系表
+CREATE TABLE IF NOT EXISTS sector_stocks (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sector_id INT,
+    stock_code VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_sector_stock (sector_id, stock_code),
+    FOREIGN KEY (sector_id) REFERENCES sectors(sector_id),
+    FOREIGN KEY (stock_code) REFERENCES stocks(证券代码)
+);
+"""
+
+def init_database():
+    """初始化数据库"""
     try:
-        conn = sqlite3.connect('example.db')
+        # 连接数据库
+        conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
         
-        # 检查并创建财务数据表 - 资产负债表
-        if not check_table_exists(cursor, 'balance_sheet'):
-            cursor.execute('''
-                CREATE TABLE balance_sheet (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    ts_code VARCHAR(10) NOT NULL,      -- 股票代码
-                    ann_date VARCHAR(8) NOT NULL,      -- 公告日期
-                    end_date VARCHAR(8) NOT NULL,      -- 报告期
-                    total_assets DECIMAL(20,4),        -- 总资产
-                    total_liab DECIMAL(20,4),          -- 总负债
-                    total_equity DECIMAL(20,4),        -- 股东权益合计
-                    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(ts_code, end_date)
-                )
-            ''')
-            logger.info("创建表: balance_sheet")
-        
-        # 检查并创建财务数据表 - 利润表
-        if not check_table_exists(cursor, 'income'):
-            cursor.execute('''
-                CREATE TABLE income (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    ts_code VARCHAR(10) NOT NULL,      -- 股票代码
-                    ann_date VARCHAR(8) NOT NULL,      -- 公告日期
-                    end_date VARCHAR(8) NOT NULL,      -- 报告期
-                    total_revenue DECIMAL(20,4),       -- 营业总收入
-                    operate_profit DECIMAL(20,4),      -- 营业利润
-                    n_income DECIMAL(20,4),           -- 净利润
-                    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(ts_code, end_date)
-                )
-            ''')
-            logger.info("创建表: income")
-        
-        # 检查并创建财务数据表 - 财务指标
-        if not check_table_exists(cursor, 'financial_indicator'):
-            cursor.execute('''
-                CREATE TABLE financial_indicator (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    ts_code VARCHAR(10) NOT NULL,      -- 股票代码
-                    ann_date VARCHAR(8) NOT NULL,      -- 公告日期
-                    end_date VARCHAR(8) NOT NULL,      -- 报告期
-                    grossprofit_margin DECIMAL(20,4),  -- 毛利率
-                    debt_to_assets DECIMAL(20,4),      -- 资产负债率
-                    update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(ts_code, end_date)
-                )
-            ''')
-            logger.info("创建表: financial_indicator")
-        
-        # 创建必要的索引
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_balance_sheet_code_date ON balance_sheet(ts_code, end_date)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_income_code_date ON income(ts_code, end_date)')
-        cursor.execute('CREATE INDEX IF NOT EXISTS idx_financial_code_date ON financial_indicator(ts_code, end_date)')
+        # 执行建表语句
+        for statement in CREATE_TABLES_SQL.split(';'):
+            if statement.strip():
+                cursor.execute(statement)
         
         conn.commit()
-        logger.info("缺失的数据库表初始化完成")
+        logger.info('数据库初始化成功')
         
     except Exception as e:
-        logger.error(f"初始化数据库表失败: {str(e)}")
+        logger.error(f'数据库初始化失败: {str(e)}')
         raise
+        
     finally:
+        if 'cursor' in locals():
+            cursor.close()
         if 'conn' in locals():
             conn.close()
 
 if __name__ == '__main__':
-    init_missing_tables() 
+    init_database() 

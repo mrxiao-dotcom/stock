@@ -3,24 +3,39 @@ import os
 
 
 def create_favicon():
-    """创建一个简单的网站图标"""
-    # 创建一个 32x32 的图像
+    """创建一个股票K线形状的网站图标"""
+    # 创建一个32x32的图像，使用深蓝色背景
     size = 32
-    img = Image.new('RGB', (size, size), color='white')
+    background_color = '#1a365d'
+    line_color = '#ffffff'
+    
+    img = Image.new('RGB', (size, size), background_color)
     draw = ImageDraw.Draw(img)
-
-    # 绘制一个简单的图标 - 蓝色方块
-    margin = 2
-    draw.rectangle(
-        [margin, margin, size - margin, size - margin],
-        fill='#0d6efd',  # Bootstrap 主色
-        outline='#0a58ca'  # 稍深的边框色
-    )
-
+    
+    # 绘制简化的K线图形
+    margin = 4
+    width = size - 2 * margin
+    height = size - 2 * margin
+    
+    # 绘制上升趋势线
+    draw.line([
+        (margin, height + margin),  # 起点
+        (width + margin, margin)    # 终点
+    ], fill=line_color, width=2)
+    
+    # 绘制K线柱
+    bar_width = 3
+    positions = [(8, 20), (14, 16), (20, 12), (26, 8)]
+    for x, y in positions:
+        draw.rectangle([
+            (x, y),
+            (x + bar_width, y + 6)
+        ], fill=line_color)
+    
     # 确保目录存在
     os.makedirs('static/images', exist_ok=True)
-
-    # 保存为 ICO 文件
+    
+    # 保存为ICO文件
     img.save('static/images/favicon.ico')
 
 

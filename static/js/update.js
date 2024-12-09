@@ -1,110 +1,81 @@
-// 更新历史数据
-function updateHistoricalData() {
-    console.log('开始更新历史数据');
-    
-    // 显示停止按钮，隐藏开始按钮
-    document.getElementById('start-update-btn').style.display = 'none';
-    document.getElementById('stop-update-btn').style.display = 'inline-block';
-    
-    // 发起更新请求
-    fetch('/api/update_historical_data', {
-        method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('更新请求发送成功:', data);
-        // 开始轮询进度
-        startProgressPolling();
-    })
-    .catch(error => {
-        console.error('更新请求失败:', error);
-        showError('更新请求失败: ' + error.message);
-    });
-}
+// 全局变量
+let updateStatus = {
+    isUpdating: false,
+    lastUpdateTime: null
+};
 
-// 停止更新
-function stopHistoricalData() {
-    console.log('停止更新');
-    
-    fetch('/api/stop_update', {
-        method: 'POST'
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('停止请求发送成功:', data);
-        // 显示开始按钮，隐藏停止按钮
-        document.getElementById('start-update-btn').style.display = 'inline-block';
-        document.getElementById('stop-update-btn').style.display = 'none';
-    })
-    .catch(error => {
-        console.error('停止请求失败:', error);
-        showError('停止请求失败: ' + error.message);
-    });
-}
-
-// 轮询进度
-let progressInterval;
-function startProgressPolling() {
-    // 清除可能存在的旧定时器
-    if (progressInterval) {
-        clearInterval(progressInterval);
-    }
-    
-    // 设置新的定时器
-    progressInterval = setInterval(checkProgress, 1000);
-}
-
-// 检查进度
-function checkProgress() {
-    fetch('/api/update_progress')
+// 检查更新状态
+function checkUpdateStatus() {
+    fetch('/api/update/status')
         .then(response => response.json())
         .then(data => {
-            updateProgressUI(data);
-            
-            // 如果更新完成或出错，停止轮询
-            if (data.status === 'completed' || data.status === 'error' || !data.is_running) {
-                clearInterval(progressInterval);
-                // 显示开始按钮，隐藏停止按钮
-                document.getElementById('start-update-btn').style.display = 'inline-block';
-                document.getElementById('stop-update-btn').style.display = 'none';
+            if (data.success) {
+                updateStatus.isUpdating = data.is_updating;
+                updateStatus.lastUpdateTime = data.last_update_time;
+                updateStatusUI();
+            }
+        })
+        .catch(error => console.error('检查更新状态失败:', error));
+}
+
+// 更新状态UI
+function updateStatusUI() {
+    const statusElement = document.getElementById('update-status');
+    if (!statusElement) return;
+
+    if (updateStatus.isUpdating) {
+        statusElement.innerHTML = `
+            <span class="badge bg-warning">
+                <i class="fas fa-sync fa-spin"></i> 更新中...
+            </span>
+        `;
+    } else {
+        const lastUpdate = updateStatus.lastUpdateTime ? 
+            new Date(updateStatus.lastUpdateTime).toLocaleString() : '未知';
+        statusElement.innerHTML = `
+            <span class="badge bg-success">
+                <i class="fas fa-check"></i> 最后更新: ${lastUpdate}
+            </span>
+        `;
+    }
+}
+
+// 启动数据更新
+function startUpdate() {
+    if (updateStatus.isUpdating) {
+        alert('数据正在更新中，请稍后再试');
+        return;
+    }
+
+    if (!confirm('确定要更新数据吗？')) return;
+
+    fetch('/api/update/start', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateStatus.isUpdating = true;
+                updateStatusUI();
+                // 开始轮询更新状态
+                pollUpdateStatus();
+            } else {
+                alert('启动更新失败: ' + data.message);
             }
         })
         .catch(error => {
-            console.error('获取进度失败:', error);
-            clearInterval(progressInterval);
+            console.error('启动更新失败:', error);
+            alert('启动更新失败，请查看控制台');
         });
 }
 
-// 更新进度UI
-function updateProgressUI(data) {
-    // 更新状态文本
-    const statusText = document.getElementById('update-status');
-    if (statusText) {
-        if (data.current_stock) {
-            statusText.textContent = `正在更新: ${data.current_stock} (${data.current_index}/${data.total_stocks})`;
-        } else {
-            statusText.textContent = data.status === 'idle' ? '等待更新' : '更新完成';
-        }
-    }
-    
-    // 更新统计信息
-    document.getElementById('success-count').textContent = `成功: ${data.updated_count || 0}`;
-    document.getElementById('error-count').textContent = `失败: ${data.error_logs.length || 0}`;
-    document.getElementById('remaining-count').textContent = 
-        `剩余: ${Math.max(0, (data.total_stocks || 0) - (data.current_index || 0))}`;
-    
-    // 更新错误日志
-    const errorLogs = document.getElementById('error-logs');
-    if (errorLogs && data.error_logs && data.error_logs.length > 0) {
-        errorLogs.innerHTML = data.error_logs.map(log => `<div>${log}</div>`).join('');
-    }
+// 轮询更新状态
+function pollUpdateStatus() {
+    if (!updateStatus.isUpdating) return;
+
+    checkUpdateStatus();
+    setTimeout(pollUpdateStatus, 5000);  // 每5秒检查一次
 }
 
-// 显示错误信息
-function showError(message) {
-    const errorMessage = document.getElementById('error-message');
-    if (errorMessage) {
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-    }
-}
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    checkUpdateStatus();
+});

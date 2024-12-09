@@ -196,25 +196,41 @@ function updateStockDailyChart(data) {
 
     // 计算涨跌幅
     const changes = [];
-    for (let i = 1; i < data.dates.length; i++) {
-        const prevClose = data.closes[i-1];
-        const currClose = data.closes[i];
-        const change = ((currClose - prevClose) / prevClose * 100).toFixed(2);
-        changes.push(parseFloat(change));
+    if (data.closes && data.closes.length > 0) {
+        for (let i = 1; i < data.closes.length; i++) {
+            const prevClose = data.closes[i-1];
+            const currClose = data.closes[i];
+            const change = ((currClose - prevClose) / prevClose * 100).toFixed(2);
+            changes.push(parseFloat(change));
+        }
+        changes.unshift(0);  // 第一天的涨跌幅为0
     }
-    changes.unshift(0);  // 第一天的涨跌幅为0
 
     const option = {
         ...BASE_CHART_CONFIG,
         title: {
             text: `${data.name}K线`,
-            ...CHART_TITLE_STYLE
+            ...CHART_TITLE_STYLE,
+            left: '50%',
+            top: 10,
+            textAlign: 'center',
+            textStyle: {
+                ...CHART_TITLE_STYLE,
+                align: 'center'
+            }
         },
         legend: {
             data: ['涨跌幅', '成交额'],
             top: 30,
             right: 10,
             textStyle: { fontSize: 12 }
+        },
+        grid: {
+            top: 70,
+            right: '3%',
+            bottom: 30,
+            left: '3%',
+            containLabel: true
         },
         xAxis: {
             type: 'category',
@@ -248,17 +264,16 @@ function updateStockDailyChart(data) {
         series: [{
             name: '涨跌幅',
             type: 'line',
-            data: changes,
+            data: data.changes || changes,  // 使用传入的数据或计算的数据
             itemStyle: {
-                color: params => params.value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN
+                color: params => getChangeColor(params.value)
             },
             lineStyle: {
-                width: 1,
-                color: CHART_COLORS.UP
+                width: 1
             },
             areaStyle: {
                 opacity: 0.2,
-                color: params => params.value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN
+                color: params => getChangeColor(params.value)
             },
             markPoint: {
                 data: [
@@ -285,10 +300,10 @@ function updateStockDailyChart(data) {
             yAxisIndex: 1,
             data: data.volumes,
             itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    {offset: 0, color: CHART_COLORS.VOLUME.START},
-                    {offset: 0.5, color: CHART_COLORS.VOLUME.MIDDLE},
-                    {offset: 1, color: CHART_COLORS.VOLUME.END}
+                color: createGradient(stockDailyChart, [
+                    CHART_COLORS.VOLUME.START,
+                    CHART_COLORS.VOLUME.MIDDLE,
+                    CHART_COLORS.VOLUME.END
                 ])
             }
         }],
@@ -296,12 +311,6 @@ function updateStockDailyChart(data) {
             type: 'inside',
             start: 0,
             end: 100
-        }, {
-            type: 'slider',
-            show: true,
-            bottom: 5,
-            height: 20,
-            borderColor: 'transparent'
         }]
     };
     
@@ -315,7 +324,7 @@ function updateTimelineChart(data, sectorName) {
         return;
     }
 
-    console.log('更新时间轴图表数据:', data, '板块名称:', sectorName);
+    console.log('更新时间轴图表数据:', data);
 
     if (!data || !data.daily_changes || !data.dates) {
         console.error('无效的数据格式:', data);
@@ -389,6 +398,7 @@ function updateTimelineChart(data, sectorName) {
                 axisType: 'category',
                 autoPlay: false,
                 playInterval: 3000,
+                currentIndex: dates.length - 1,  // 设置当前索引为最后一天
                 data: dates.map(date => date.substring(5)),
                 label: {
                     formatter: function(s) {
@@ -576,27 +586,14 @@ function updateVolumeChart(data) {
                     CHART_COLORS.VOLUME.END
                 ])
             },
-            emphasis: {
-                itemStyle: {
-                    color: createGradient(volumeChart, [
-                        CHART_COLORS.VOLUME.MIDDLE,
-                        CHART_COLORS.VOLUME.MIDDLE,
-                        CHART_COLORS.VOLUME.START
-                    ])
-                }
-            },
-            barWidth: '60%',
-            label: {
+            label: {  // 添加数据标签
                 show: true,
                 position: 'top',
                 formatter: value => formatAmount(value),
-                fontSize: 10
-            }
-        }],
-        dataZoom: [{
-            type: 'inside',
-            start: 0,
-            end: 100
+                fontSize: 10,
+                color: '#666'
+            },
+            barWidth: '60%'
         }]
     };
     
@@ -698,17 +695,23 @@ function updateMoneyFlowChart(data) {
 function updateNetInflowChart(data) {
     netInflowChart = ensureChartInitialized(netInflowChart, 'net-inflow-chart');
     if (!netInflowChart) {
-        console.warn('资金净流入图表初始化失败');
+        console.warn('资金净流入图表未初始化');
         return;
     }
 
-    console.log('更新资金净流入图表:', data);
+    console.log('更新资金净流入图表数据:', data);
 
     const option = {
-        ...BASE_CHART_CONFIG,
         title: {
-            ...BASE_CHART_CONFIG.title,
-            text: '资金净流入'
+            text: '资金净流入',
+            ...CHART_TITLE_STYLE,
+            left: '50%',
+            top: 10,
+            textAlign: 'center',
+            textStyle: {
+                ...CHART_TITLE_STYLE,
+                align: 'center'
+            }
         },
         tooltip: {
             trigger: 'axis',
@@ -716,40 +719,57 @@ function updateNetInflowChart(data) {
                 const value = params[0].value;
                 const color = value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN;
                 return `${params[0].axisValue}<br/>
-                        <span style="color:${color}">净流入: ${(value/10000).toFixed(2)}万</span>`;
+                        <span style="color:${color}">净流入: ${formatAmount(value)}</span>`;
             }
+        },
+        grid: {
+            top: 50,
+            right: '3%',
+            bottom: 30,
+            left: '3%',
+            containLabel: true
         },
         xAxis: {
             type: 'category',
             data: data.dates,
             axisLabel: {
-                ...AXIS_LABEL_STYLE,
+                fontSize: 10,
                 rotate: 30,
                 formatter: formatDate
             }
         },
         yAxis: {
             type: 'value',
-            name: '金额(万)',
-            nameTextStyle: AXIS_LABEL_STYLE,
+            name: '金额',
+            nameTextStyle: {
+                fontSize: 12,
+                padding: [0, 30, 0, 0]
+            },
             axisLabel: {
-                ...AXIS_LABEL_STYLE,
-                formatter: value => (value/10000).toFixed(1)
+                fontSize: 10,
+                formatter: value => formatAmount(value)
+            },
+            splitLine: {
+                show: true,
+                lineStyle: {
+                    type: 'dashed',
+                    color: CHART_COLORS.SPLIT_LINE
+                }
             }
         },
         series: [{
+            name: '净流入',
             type: 'bar',
             data: data.net_inflow,
             itemStyle: {
                 color: params => params.value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN
             },
-            label: {
-                show: true,
-                position: 'top',
-                formatter: params => (params.value/10000).toFixed(1),
-                fontSize: 10,
-                color: params => params.value >= 0 ? CHART_COLORS.UP : CHART_COLORS.DOWN
-            }
+            barWidth: '60%'
+        }],
+        dataZoom: [{
+            type: 'inside',
+            start: 0,
+            end: 100
         }]
     };
     

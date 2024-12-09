@@ -1,37 +1,51 @@
 import logging
-from config.config import LOG_CONFIG
 import os
-
-_loggers = {}
+import traceback
+import sys
+from logging.handlers import RotatingFileHandler
 
 def setup_logger(name):
-    """创建或获取logger实例"""
-    if name in _loggers:
-        return _loggers[name]
-    
-    # 确保日志目录存在
-    os.makedirs('logs', exist_ok=True)
-    
+    """设置日志记录器"""
     logger = logging.getLogger(name)
-    
-    # 如果logger已经有处理器，直接返回
-    if logger.handlers:
-        return logger
-        
-    logger.setLevel(LOG_CONFIG['level'])
-    
+    logger.setLevel(logging.INFO)
+
+    # 创建logs目录（如果不存在）
+    os.makedirs('logs', exist_ok=True)
+
     # 文件处理器
-    fh = logging.FileHandler(LOG_CONFIG['filename'])
-    fh.setFormatter(logging.Formatter(LOG_CONFIG['format']))
-    
+    file_handler = RotatingFileHandler(
+        f'logs/{name}.log',
+        maxBytes=1024*1024,  # 1MB
+        backupCount=5
+    )
+    file_handler.setLevel(logging.INFO)
+
+    # 格式化器
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - [%(filename)s:%(lineno)d] - %(levelname)s - %(message)s'
+    )
+    file_handler.setFormatter(formatter)
+
     # 控制台处理器
-    ch = logging.StreamHandler()
-    ch.setFormatter(logging.Formatter(LOG_CONFIG['format']))
-    
-    logger.addHandler(fh)
-    logger.addHandler(ch)
-    
-    # 缓存logger实例
-    _loggers[name] = logger
-    
-    return logger 
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
+    # 添加处理器
+    if not logger.handlers:
+        logger.addHandler(file_handler)
+        logger.addHandler(console_handler)
+
+    return logger
+
+def log_error(logger, error_msg, exc_info=None):
+    """记录错误信息，包括堆栈跟踪"""
+    if exc_info:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        tb = traceback.extract_tb(exc_traceback)
+        # 获取最后一个堆栈帧（错误发生的位置）
+        last_frame = tb[-1]
+        error_location = f"{last_frame.filename}:{last_frame.lineno}"
+        logger.error(f"{error_msg} at {error_location}\n{traceback.format_exc()}")
+    else:
+        logger.error(error_msg) 

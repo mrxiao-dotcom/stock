@@ -1429,3 +1429,178 @@ sqlite3.OperationalError: no such table: sectors
 2024-11-21 11:04:42,524 - stock_routes - INFO - 获取股票 603638.SH 的详细信息
 2024-11-21 11:17:40,553 - routes - INFO - Tushare API 初始化成功
 2024-11-21 11:17:40,567 - main - INFO - 启动应用服务器
+2024-11-22 09:08:52,457 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:08:52,472 - main - INFO - 启动应用服务器
+2024-11-22 09:11:22,067 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:11:22,085 - main - INFO - 启动应用服务器
+2024-11-22 09:15:53,887 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:15:53,905 - main - INFO - 启动应用服务器
+2024-11-22 09:18:33,413 - routes - INFO - 访问主页
+2024-11-22 09:18:34,530 - routes - INFO - 访问主页
+2024-11-22 09:18:35,191 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:18:35,229 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:18:35,235 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:18:35,381 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:18:41,029 - sector_routes - INFO - 获取板块 34 的股票列表
+2024-11-22 09:18:41,394 - stock_routes - INFO - 获取股票 002870.SZ 的详细信息
+2024-11-22 09:21:00,032 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:21:00,047 - main - INFO - 启动应用服务器
+2024-11-22 09:21:01,301 - routes - INFO - 访问主页
+2024-11-22 09:21:01,888 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:21:01,923 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:21:01,931 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:21:02,129 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:21:06,517 - sector_routes - INFO - 获取板块 19 的股票列表
+2024-11-22 09:21:06,693 - stock_routes - INFO - 获取股票 603607.SH 的详细信息
+2024-11-22 09:21:20,260 - routes - INFO - 访问主页
+2024-11-22 09:21:20,653 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:21:20,683 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:21:20,689 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:21:20,851 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:21:57,144 - stock_routes - INFO - 获取股票 000520.SZ 的详细信息
+2024-11-22 09:24:17,813 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:24:17,828 - main - INFO - 启动应用服务器
+2024-11-22 09:24:18,646 - routes - INFO - 访问主页
+2024-11-22 09:24:19,385 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:24:19,432 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:24:19,439 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:24:19,671 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:24:25,587 - sector_routes - INFO - 获取板块 33 的股票列表
+2024-11-22 09:24:25,819 - stock_routes - INFO - 获取股票 601799.SH 的详细信息
+2024-11-22 09:24:30,331 - sector_routes - INFO - 获取板块 33 的股票列表
+2024-11-22 09:24:31,379 - sector_routes - INFO - 获取板块 22 的股票列表
+2024-11-22 09:24:31,558 - stock_routes - INFO - 获取股票 002938.SZ 的详细信息
+2024-11-22 09:24:32,858 - stock_routes - INFO - 获取股票 300735.SZ 的详细信息
+2024-11-22 09:26:37,177 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:26:37,190 - main - INFO - 启动应用服务器
+2024-11-22 09:26:37,804 - routes - INFO - 访问主页
+2024-11-22 09:26:38,474 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:26:38,523 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:26:38,529 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:26:38,705 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:26:42,820 - sector_routes - INFO - 获取板块 19 的股票列表
+2024-11-22 09:26:42,932 - stock_routes - INFO - 获取股票 603607.SH 的详细信息
+2024-11-22 09:26:45,365 - sector_routes - INFO - 获取板块 20 的股票列表
+2024-11-22 09:26:45,511 - stock_routes - INFO - 获取股票 000521.SZ 的详细信息
+2024-11-22 09:26:58,963 - sector_routes - INFO - 获取板块 15 的股票列表
+2024-11-22 09:26:59,110 - stock_routes - INFO - 获取股票 002207.SZ 的详细信息
+2024-11-22 09:27:26,529 - sector_routes - INFO - 获取板块 35 的股票列表
+2024-11-22 09:27:26,580 - stock_routes - INFO - 获取股票 603019.SH 的详细信息
+2024-11-22 09:28:27,118 - sector_routes - INFO - 获取板块 27 的股票列表
+2024-11-22 09:28:27,218 - stock_routes - INFO - 获取股票 000948.SZ 的详细信息
+2024-11-22 09:29:42,171 - sector_routes - INFO - 获取板块 36 的股票列表
+2024-11-22 09:29:42,373 - stock_routes - INFO - 获取股票 600845.SH 的详细信息
+2024-11-22 09:29:45,179 - stock_routes - INFO - 获取股票 603019.SH 的详细信息
+2024-11-22 09:29:49,651 - stock_routes - INFO - 获取股票 300383.SZ 的详细信息
+2024-11-22 09:33:02,387 - stock_routes - INFO - 获取股票 300052.SZ 的详细信息
+2024-11-22 09:33:04,721 - stock_routes - INFO - 获取股票 603019.SH 的详细信息
+2024-11-22 09:33:15,177 - sector_routes - INFO - 获取板块 29 的股票列表
+2024-11-22 09:33:15,269 - stock_routes - INFO - 获取股票 300366.SZ 的详细信息
+2024-11-22 09:33:16,449 - sector_routes - INFO - 获取板块 27 的股票列表
+2024-11-22 09:33:16,543 - stock_routes - INFO - 获取股票 000948.SZ 的详细信息
+2024-11-22 09:33:24,040 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:33:24,075 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:33:24,082 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:33:24,205 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:33:34,690 - routes - INFO - Tushare API 初始化成功
+2024-11-22 09:33:34,705 - main - INFO - 启动应用服务器
+2024-11-22 09:33:41,028 - routes - INFO - 访问主页
+2024-11-22 09:33:41,421 - sector_routes - INFO - 获取板块列表
+2024-11-22 09:33:41,462 - sector_routes - INFO - 查询到 27 个板块
+2024-11-22 09:33:41,469 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-22 09:33:41,605 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-22 09:33:43,657 - sector_routes - INFO - 获取板块 33 的股票列表
+2024-11-22 09:33:43,924 - stock_routes - INFO - 获取股票 601799.SH 的详细信息
+2024-11-22 09:33:46,511 - sector_routes - INFO - 获取板块 24 的股票列表
+2024-11-22 09:33:46,736 - stock_routes - INFO - 获取股票 600941.SH 的详细信息
+2024-11-22 09:33:48,127 - sector_routes - INFO - 获取板块 10 的股票列表
+2024-11-22 09:33:48,318 - stock_routes - INFO - 获取股票 600272.SH 的详细信息
+2024-11-22 09:33:56,544 - stock_routes - INFO - 获取股票 300341.SZ 的详细信息
+2024-11-27 10:08:16,779 - routes - INFO - Tushare API 初始化成功
+2024-11-27 10:08:16,796 - main - INFO - 启动应用服务器
+2024-11-27 10:08:18,071 - routes - INFO - 访问主页
+2024-11-27 10:08:18,968 - sector_routes - INFO - 获取板块列表
+2024-11-27 10:08:19,038 - sector_routes - INFO - 查询到 27 个板块
+2024-11-27 10:08:19,046 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-27 10:08:19,386 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-27 10:08:31,958 - routes - INFO - 访问主页
+2024-11-27 10:08:32,453 - sector_routes - INFO - 获取板块列表
+2024-11-27 10:08:32,484 - sector_routes - INFO - 查询到 27 个板块
+2024-11-27 10:08:32,493 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-27 10:08:32,706 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-27 10:09:48,096 - routes - INFO - Tushare API 初始化成功
+2024-11-27 10:09:48,109 - main - INFO - 启动应用服务器
+2024-11-27 10:10:19,111 - routes - INFO - 访问主页
+2024-11-27 10:10:19,874 - sector_routes - INFO - 获取板块列表
+2024-11-27 10:10:19,924 - sector_routes - INFO - 查询到 27 个板块
+2024-11-27 10:10:19,931 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-27 10:10:20,134 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-27 18:55:09,327 - routes - INFO - Tushare API 初始化成功
+2024-11-27 18:55:09,343 - main - INFO - 启动应用服务器
+2024-11-27 18:55:17,828 - routes - INFO - 访问主页
+2024-11-27 18:55:18,468 - sector_routes - INFO - 获取板块列表
+2024-11-27 18:55:18,514 - sector_routes - INFO - 查询到 27 个板块
+2024-11-27 18:55:18,521 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-27 18:55:18,662 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-27 18:55:29,313 - routes - INFO - 访问主页
+2024-11-27 18:55:29,740 - sector_routes - INFO - 获取板块列表
+2024-11-27 18:55:29,769 - sector_routes - INFO - 查询到 27 个板块
+2024-11-27 18:55:29,778 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-27 18:55:29,928 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-28 00:10:39,123 - routes - INFO - 访问主页
+2024-11-28 00:10:39,680 - sector_routes - INFO - 获取板块列表
+2024-11-28 00:10:39,710 - sector_routes - INFO - 查询到 27 个板块
+2024-11-28 00:10:39,715 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-28 00:10:39,896 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-11-28 00:10:45,120 - sector_routes - INFO - 获取板块 19 的股票列表
+2024-11-28 00:10:45,372 - stock_routes - INFO - 获取股票 002549.SZ 的详细信息
+2024-11-28 09:11:46,839 - routes - INFO - Tushare API 初始化成功
+2024-11-28 09:11:46,864 - main - INFO - 启动应用服务器
+2024-11-28 09:11:49,745 - routes - INFO - 访问主页
+2024-11-28 09:11:50,419 - sector_routes - INFO - 获取板块列表
+2024-11-28 09:11:50,461 - sector_routes - INFO - 查询到 27 个板块
+2024-11-28 09:11:50,468 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-11-28 09:11:50,740 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-02 22:15:41,967 - routes - INFO - Tushare API 初始化成功
+2024-12-02 22:15:41,983 - main - INFO - 启动应用服务器
+2024-12-02 23:04:17,519 - routes - INFO - 访问主页
+2024-12-02 23:04:18,714 - routes - INFO - 访问主页
+2024-12-02 23:04:19,280 - sector_routes - INFO - 获取板块列表
+2024-12-02 23:04:19,365 - sector_routes - INFO - 查询到 29 个板块
+2024-12-02 23:04:19,370 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-12-02 23:04:19,590 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-02 23:04:35,647 - routes - INFO - 访问主页
+2024-12-02 23:04:36,176 - sector_routes - INFO - 获取板块列表
+2024-12-02 23:04:36,204 - sector_routes - INFO - 查询到 29 个板块
+2024-12-02 23:04:36,216 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-12-02 23:04:36,391 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-03 06:04:18,375 - routes - INFO - Tushare API 初始化成功
+2024-12-03 06:04:18,388 - main - INFO - 启动应用服务器
+2024-12-03 06:04:24,234 - routes - INFO - 访问主页
+2024-12-03 06:04:24,821 - sector_routes - INFO - 获取板块列表
+2024-12-03 06:04:24,870 - sector_routes - INFO - 查询到 29 个板块
+2024-12-03 06:04:24,877 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-12-03 06:04:25,050 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-03 06:12:38,686 - routes - INFO - Tushare API 初始化成功
+2024-12-03 06:12:38,698 - main - INFO - 启动应用服务器
+2024-12-03 06:12:46,300 - routes - INFO - 访问主页
+2024-12-03 06:12:46,926 - sector_routes - INFO - 获取板块列表
+2024-12-03 06:12:46,963 - sector_routes - INFO - 查询到 29 个板块
+2024-12-03 06:12:46,971 - sector_routes - INFO - 获取板块 5 的股票列表
+2024-12-03 06:12:47,115 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-03 06:23:14,400 - routes - INFO - Tushare API 初始化成功
+2024-12-03 06:23:14,402 - main - ERROR - 应用启动失败: cannot import name 'index_routes' from 'app.routes' (D:\pythonProject\stockApp\app\routes\__init__.py)
+2024-12-03 06:26:02,231 - main - ERROR - 应用启动失败: cannot import name 'app' from 'app' (D:\pythonProject\stockApp\app\__init__.py)
+2024-12-03 06:26:44,347 - main - INFO - 启动应用服务器
+2024-12-03 06:28:45,702 - main - INFO - 启动应用服务器
+2024-12-03 06:29:26,265 - main - INFO - 启动应用服务器
+2024-12-03 06:30:18,633 - main - INFO - 启动应用服务器
+2024-12-03 06:31:46,970 - main - INFO - 启动应用服务器
+2024-12-03 14:07:26,338 - main - INFO - 启动应用服务器
+2024-12-03 14:08:37,746 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-03 14:08:37,759 - database - ERROR - 数据库连接失败: 1054 (42S22): Unknown column 'pre_close' in 'field list'
+2024-12-03 14:08:37,760 - stock_routes - ERROR - 获取股票详情失败: 1054 (42S22): Unknown column 'pre_close' in 'field list'
+2024-12-03 14:21:58,135 - main - INFO - 启动应用服务器
+2024-12-03 14:22:07,296 - stock_routes - INFO - 获取股票 601096.SH 的详细信息
+2024-12-03 14:22:07,306 - database - ERROR - 数据库连接失败: 1054 (42S22): Unknown column 'pct_chg' in 'field list'
+2024-12-03 14:22:07,306 - stock_routes - ERROR - 获取股票详情失败: 1054 (42S22): Unknown column 'pct_chg' in 'field list'
